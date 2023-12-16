@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Visualization with D3.js</title>
+    <style>
+        /* Basic styling for the charts */
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        svg {
+            border: 1px solid #ccc;
+        }
+        .axis-text {
+            font-size: 20px; /* Adjust the size as needed */
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <div id="barChartContainer">
+            <svg id="barChart"></svg>
+        </div>
+        <div id="scatterPlotContainer">
+            <svg id="scatterPlot"></svg>
+        </div>
+    </div>
+    <!-- Include D3.js library -->
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bumbeishvili/d3-tip-for-v6@4/d3-tip.min.css">
+    <!-- Include your JavaScript files -->
+    <script src="main.js"></script>
+    <script src="barChart.js"></script>
+    <script src="scatterPlot.js"></script>
+</body>
+</html>
