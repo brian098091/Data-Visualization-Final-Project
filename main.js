@@ -14,6 +14,13 @@ d3.csv('cleaned.csv').then(data => {
                         margin = { left:90, right:90, top:60, bottom:90},
                         1
                         )
+    
+    createDensityPlot("loudness", data, "loudness", margin = { left:60, right:10, top:20, bottom:20})
+    createDensityPlot("liveness", data, "liveness", margin = { left:60, right:10, top:20, bottom:20})
+    createDensityPlot("acousticness", data, "acousticness", margin = { left:60, right:10, top:20, bottom:20})
+    createDensityPlot("valence", data, "valence", margin = { left:60, right:10, top:20, bottom:20})
+    createDensityPlot("tempo", data, "tempo", margin = { left:60, right:10, top:20, bottom:20})
+    createDensityPlot("duration_ms", data, "duration_ms", margin = { left:60, right:10, top:20, bottom:20})
 
     // Create the initial bar chart
     createBarChart(data);

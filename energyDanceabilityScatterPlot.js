@@ -5,8 +5,6 @@ function createScatterPlot( svg_name,
                             margin = {left:100, right:50, top:50, bottom:100 },
                             mark_size = 1) {
 
-    console.log(data);
-
     const TOTAL_HEIGHT = document.getElementById(svg_name).getAttribute("height");
     const TOTAL_WIDTH = document.getElementById(svg_name).getAttribute("width");
     const height = TOTAL_HEIGHT - margin.top - margin.bottom;
@@ -56,9 +54,7 @@ function createScatterPlot( svg_name,
     plot_exit.remove();
     
     // Draw x axis
-    const x_label_field = all.selectAll("#x_axis").data([0])
-    const x_label_g = x_label_field.enter()
-        .append("g")
+    const x_label_g = all.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top+height})`)
         .attr("id", "x_axis")
     x_label_g.append("g")
@@ -71,9 +67,7 @@ function createScatterPlot( svg_name,
         .attr("y", margin.bottom/2)
     
     // Y Axis
-    const y_label_field = all.selectAll("#y_axis").data([0])
-    const y_label_g = y_label_field.enter()
-        .append("g")
+    const y_label_g = all.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`)
         .attr("id", "y_axis")
     y_label_g.append("g")
@@ -88,6 +82,10 @@ function createScatterPlot( svg_name,
     // Brush
     const brush = d3.brush()
         .extent([[0, 0], [width, height]])
+        .on("end", event => {
+            const selected = event.selection
+            console.log(selected);
+        })
     g.call(brush);
 
     // Color Labels
@@ -95,9 +93,7 @@ function createScatterPlot( svg_name,
         .domain( data.map(d=>d[color_attr_name]) )
         .range( [height/2, height] )
 
-    const color_label_field = all.selectAll("#color_axis").data([0])
-    const color_label_g = color_label_field.enter()
-        .append("g")
+    const color_label_g = all.append("g")
         .attr("id", "color_axis")
         .attr("transform", `translate(${margin.left+width}, ${margin.top})`)
     
