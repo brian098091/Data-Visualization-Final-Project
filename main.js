@@ -8,6 +8,13 @@ d3.csv('cleaned.csv').then(data => {
         d.combinedPopularity = d.track_popularity + d.duration_ms * 0.01;
     });
 
+    createScatterPlot(  "energy_danceability_scatter_plot", data,
+                        "danceability", "energy", "playlist_genre",
+                        "danceability", "energy", "playlist_genre",
+                        margin = { left:90, right:90, top:60, bottom:90},
+                        1
+                        )
+
     // Create the initial bar chart
     createBarChart(data);
 
