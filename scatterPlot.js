@@ -8,10 +8,7 @@ function updateScatterPlot(artistData) {
           width = 650 - margin.left - margin.right,
           height = 450 - margin.top - margin.bottom;
 
-          artistData.forEach(d => {
-            d.track_popularity = +d.track_popularity;
-        
-        });
+ 
     // Clear any existing content in the SVG container
     const svgContainer = d3.select("#scatterPlot");
     svgContainer.selectAll("*").remove();

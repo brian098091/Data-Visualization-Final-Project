@@ -42,6 +42,15 @@ function createScatterPlot( svg_name,
     // Draw
     const all = d3.select("#" + svg_name)
 
+    all.append("text")
+        .text("Songs Distribution")
+        .attr("x", TOTAL_WIDTH/2)
+        .attr("y", margin.top/2)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-weight", "bold")
+        .attr("font-size", 25)
+
     const g = all.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`)
 

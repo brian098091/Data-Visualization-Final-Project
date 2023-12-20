@@ -4,14 +4,22 @@ let fullArtistData = null
 let filteredData = null
 const preferences = {}
 const density_attr_names = ["loudness", "liveness", "acousticness", "valence", "tempo", "duration_ms"];
+const normal = {}
+
 density_attr_names.forEach(d => preferences[d] = null)
 let fulldata;
 function set_preference(attr, val) {
     console.log(preferences)
 }
 d3.csv('cleaned.csv').then(data => {
-    fulldata = data;
+    // fulldata = data;
     filteredData = data;
+    density_attr_names.forEach( attr => {
+        data.forEach(d => d[attr] = Number(d[attr]))
+        normal[attr] = d3.max(data.map(d => d[attr])) - d3.min(data.map(d => d[attr]));
+        // console.log(attr, d3.max(data.map(d => d[attr])), d3.min(data.map(d => d[attr])))
+    });
+    // console.log(normal);
     // Process the data (parse dates, calculate additional fields, etc.)
     data.forEach( d => {
         d.track_release_date = new Date(d.track_album_release_date);
@@ -59,11 +67,8 @@ d3.csv('cleaned.csv').then(data => {
 
 function updateAllChart(rerrrfilteredData) { // and density plot
     // Clear the existing bar chart
+    d3.select("#scatterPlot").selectAll("*").remove();
     filteredData = rerrrfilteredData;
-    const normal = {}
-    density_attr_names.forEach( attr => {
-        normal[attr] = d3.max(fulldata.map(d => d[attr])) - d3.min(fulldata.map(d => d[attr]));
-    });
                 
     filteredData.forEach(d => {
         d.track_popularity = +d.track_popularity;
@@ -87,7 +92,7 @@ function updateAllChart(rerrrfilteredData) { // and density plot
     // Draw the bar chart with the brushed data
     createBarChart(filteredData);
 
-    /*d3.selectAll("#densityG .density_plot").remove();
+    d3.selectAll("#densityG .density_plot").remove();
     const windowG = d3.select("body")
                     .append("g")
                     .attr("id", "densityG")
@@ -99,5 +104,5 @@ function updateAllChart(rerrrfilteredData) { // and density plot
             .attr("class", "density_plot")
     density_attr_names.forEach( name => {
         createDensityPlot(name, filteredData, name, margin = { left:60, right:10, top:20, bottom:20}, updateAllChart)
-    })*/
+    })
 }

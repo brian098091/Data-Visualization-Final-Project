@@ -13,7 +13,6 @@ function createDensityPlot( svg_id,
     const height = TOTAL_HEIGHT - margin.top - margin.bottom;
     const width = TOTAL_WIDTH - margin.left - margin.right;
 
-    data.forEach(d => d[attr_name] = Number(d[attr_name]))
     const xScale = d3.scaleLinear()
                 .domain( d3.extent( data.map(d=>d[attr_name]) ) )
                 .range([0, width]);
@@ -45,8 +44,8 @@ function createDensityPlot( svg_id,
         )
 
 
-    g.append("rect")
-        .attr("x", 0)
+    const rect = g.append("rect")
+    rect.attr("x", 0)
         .attr("y", 0)
         .attr("width", width)
         .attr("height", height)
@@ -56,18 +55,34 @@ function createDensityPlot( svg_id,
             const [x, y] = d3.pointer(event);
             const xVal = xScale.invert( x );
             g.selectAll("#preference").remove();
-            g.append("rect")
-                .attr("id", "preference")
+            const rect = g.append("rect")
+            rect.attr("id", "preference")
                 .attr("x", x)
                 .attr("y", 0)
                 .attr("width", 3)
                 .attr("height", height)
                 .attr("fill", "red")
+                .on("click", (event, attr) => {
+                    preferences[attr] = null;
+                    g.selectAll("#preference").remove();
+                })
             preferences[attr] = xVal;
-            console.log(xVal);
             on_preference_set(filteredData);
         })
     
+    if ( preferences[attr_name] != null ) {
+        g.append("rect")
+            .attr("id", "preference")
+            .attr("x", xScale(preferences[attr_name]))
+            .attr("y", 0)
+            .attr("width", 3)
+            .attr("height", height)
+            .attr("fill", "red")
+            .on("click", (event, attr) => {
+                preferences[attr] = null;
+                g.selectAll("#preference").remove();
+            })
+    }
     
     all.append("text")
         .text(attr_name)
@@ -75,9 +90,14 @@ function createDensityPlot( svg_id,
         .attr("text-anchor", "middle")
         .attr("y", margin.top-5)
     
+    xaxis = d3.axisBottom(xScale)
+        .ticks(width/50)
+    if ( attr_name === "duration_ms") {
+        xaxis.tickFormat((d, i) => convertMsToTime(d))
+    }
     all.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top+height})`)
-        .call(d3.axisBottom(xScale).ticks(width/50))
+        .call(xaxis);
     
     const y_label_g = all.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`)
@@ -112,3 +132,27 @@ function kernelEpanechnikov(k) {
     };
 }
   
+
+
+
+
+function padTo2Digits(num) {
+    return num.toString().padStart(2, '0');
+}
+
+function convertMsToTime(milliseconds) {
+    let seconds = Math.floor(milliseconds / 1000);
+    let minutes = Math.floor(seconds / 60);
+    let hours = Math.floor(minutes / 60);
+
+    seconds = seconds % 60;
+    minutes = minutes % 60;
+
+    // 👇️ If you don't want to roll hours over, e.g. 24 to 00
+    // 👇️ comment (or remove) the line below
+    // commenting next line gets you `24:00:00` instead of `00:00:00`
+    // or `36:15:31` instead of `12:15:31`, etc.
+    hours = hours % 24;
+
+    return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
+}
