@@ -3,7 +3,7 @@
 // import * as d3 from 'd3';
 
 function createBarChart(data) {
-    const margin = { top: 100, right: 20, bottom: 50, left: 150 },
+    const margin = { top: 100, right: 80, bottom: 50, left: 150 },
           width = 800 - margin.left - margin.right,
           height = 400 - margin.top - margin.bottom;
 
