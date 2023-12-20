@@ -52,7 +52,7 @@ function createScatterPlot( svg_name,
     plot_enter.append("circle")
         .attr("cx", d => xScale(d[x_attr_name]))
         .attr("cy", d => yScale(d[y_attr_name]))
-        .attr("r", mark_size)
+        .attr("r", mark_size/2)
         .attr("id", "mark")
         .style("fill", d => colorScale(d[color_attr_name]))
     plot_exit.remove();
@@ -178,7 +178,7 @@ function createScatterPlot( svg_name,
                     .attr("class", "circle")
                     .attr("cx", d => xScale(d[x_attr_name]))
                     .attr("cy", d => yScale(d[y_attr_name]))
-                    .attr("r", mark_size)
+                    .attr("r", mark_size/2)
                     .style("fill", d => colorScale(d[color_attr_name]));
 
                 g.select(".brush").call(brush.move, null);

@@ -26,12 +26,16 @@ svg {
     font-weight: bold;
     top: 0vh;
     left: 50vw;
+    height: 100vh;
 }
 
 .density_plot {
-    width: 50vw;
-    height: 50/6vh;
-    left: 0vw;
+    position: relative;
+    width: 40vw;
+    left: 5vw;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    height: 14vh; /*36 / 6*/
 }
 
 .chart-container {

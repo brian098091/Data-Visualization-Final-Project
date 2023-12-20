@@ -28,8 +28,7 @@ function createDensityPlot( svg_id,
 
     const g = all.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`)
-        // .on("mouseover", function() { console.log("Hi") } )
-    
+
     g.append("path")
         .attr("class", "mypath")
         .datum(density)
@@ -43,6 +42,21 @@ function createDensityPlot( svg_id,
                 .x( d => xScale(d[0]) )
                 .y( d => yScale(d[1]) )
         )
+
+
+    g.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", "grey")
+        .attr("opacity", 0.1)
+        .on("click", (event, attr) => {
+            const [x, y] = d3.pointer(event);
+            const xVal = xScale.invert( x );
+            console.log(xVal);
+        })
+    
     
     all.append("text")
         .text(attr_name)
@@ -59,7 +73,7 @@ function createDensityPlot( svg_id,
     y_label_g.append("g")
         .call(
             d3.axisLeft(yScale)
-                .ticks(height/10)
+                .ticks(height/12)
                 .tickFormat(d => Math.round(d*10000)/10000)
             )
     y_label_g.append("text")
