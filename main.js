@@ -1,11 +1,21 @@
 // main.js
 
 let fullArtistData = null
+let filteredData = null
+const preferences = {}
+const density_attr_names = ["loudness", "liveness", "acousticness", "valence", "tempo", "duration_ms"];
+density_attr_names.forEach(d => preferences[d] = null)
+let fulldata;
+function set_preference(attr, val) {
+    console.log(preferences)
+}
 d3.csv('cleaned.csv').then(data => {
+    fulldata = data;
+    filteredData = data;
     // Process the data (parse dates, calculate additional fields, etc.)
-    data.forEach(d => {
+    data.forEach( d => {
         d.track_release_date = new Date(d.track_album_release_date);
-        d.combinedPopularity = d.track_popularity + d.duration_ms * 0.01;
+        d.combinedPopularity = 50;
     });
 
     createScatterPlot(  "energy_danceability_scatter_plot", data,
@@ -13,8 +23,10 @@ d3.csv('cleaned.csv').then(data => {
                         "danceability", "energy", "playlist_genre",
                         margin = { left:90, right:90, top:60, bottom:90},
                         2,
-                        updateBarChart,updateBarChart);
-    const density_attr_names = ["loudness", "liveness", "acousticness", "valence", "tempo", "duration_ms"];
+                        updateAllChart,updateAllChart);
+
+
+    
     const windowG = d3.select("body")
                     .append("g")
                     .attr("id", "densityG")
@@ -27,7 +39,7 @@ d3.csv('cleaned.csv').then(data => {
             .attr("class", "density_plot")
     
     density_attr_names.forEach( name => {
-        createDensityPlot(name, data, name, margin = { left:60, right:10, top:20, bottom:20})
+        createDensityPlot(name, data, name, margin = { left:60, right:10, top:20, bottom:20}, updateAllChart)
     })
 
     // Create the initial bar chart
@@ -37,7 +49,7 @@ d3.csv('cleaned.csv').then(data => {
     window.handleBarClick = artistName => {
         console.log(artistName)
         // Filter data for the selected artist
-        const artistData = data.filter(d => d.track_artist === artistName);
+        const artistData = filteredData.filter(d => d.track_artist === artistName);
 
         // Update the scatter plot with the filtered data
         fullArtistData = artistData;
@@ -45,10 +57,47 @@ d3.csv('cleaned.csv').then(data => {
     };
 });
 
-function updateBarChart(brushedData) {
+function updateAllChart(rerrrfilteredData) { // and density plot
     // Clear the existing bar chart
+    filteredData = rerrrfilteredData;
+    const normal = {}
+    density_attr_names.forEach( attr => {
+        normal[attr] = d3.max(fulldata.map(d => d[attr])) - d3.min(fulldata.map(d => d[attr]));
+    });
+                
+    filteredData.forEach(d => {
+        d.track_popularity = +d.track_popularity;
+        const rates = [];
+        Object.keys(preferences).forEach( key => {
+            if ( preferences[key] != null ) {
+                const rate = 1 - ( Math.abs(preferences[key]-d[key]) / normal[key])
+                rates.push(rate * rate);
+            } else {
+                rates.push(0.5);
+            }
+        })
+        // console.log(d['track_name'], rates);
+        d.combinedPopularity =  Math.round( d3.mean(rates) * 100 );
+
+    });
+
+    filteredData.filter(d=>d.combinedPopularity>=50);
     d3.select('#barChart').selectAll('*').remove();
 
     // Draw the bar chart with the brushed data
-    createBarChart(brushedData);
+    createBarChart(filteredData);
+
+    /*d3.selectAll("#densityG .density_plot").remove();
+    const windowG = d3.select("body")
+                    .append("g")
+                    .attr("id", "densityG")
+    windowG.selectAll("svg")
+        .data(density_attr_names)
+        .enter()
+            .append("svg")
+            .attr("id", d=>d)
+            .attr("class", "density_plot")
+    density_attr_names.forEach( name => {
+        createDensityPlot(name, filteredData, name, margin = { left:60, right:10, top:20, bottom:20}, updateAllChart)
+    })*/
 }

@@ -1,6 +1,7 @@
 // scatterPlot.js
 
 let currentFilter = null;
+
 function updateScatterPlot(artistData) {
     // Constants for the SVG size and margins
     const margin = { top: 60, right: 100, bottom: 40, left: 40 },
@@ -9,8 +10,7 @@ function updateScatterPlot(artistData) {
 
           artistData.forEach(d => {
             d.track_popularity = +d.track_popularity;
-            d.combinedPopularity = +(d.track_popularity + d.duration_ms * 0.01); // Convert to number if necessary
-
+        
         });
     // Clear any existing content in the SVG container
     const svgContainer = d3.select("#scatterPlot");
@@ -56,7 +56,7 @@ function updateScatterPlot(artistData) {
                          .domain([...new Set(fullArtistData.map(d => d.playlist_genre))]);
 
     const sizeScale = d3.scaleLinear()
-                        .range([3, 10])
+                        .range([1, 10])
                         .domain(d3.extent(artistData, d => d.combinedPopularity));
 
     // Bind the filtered data to the circles and update the scatter plot

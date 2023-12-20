@@ -1,7 +1,8 @@
 function createDensityPlot( svg_id, 
     data,
     attr_name,
-    margin = {left:100, right:50, top:50, bottom:100 }
+    margin = {left:100, right:50, top:50, bottom:100 },
+    on_preference_set
     ) {
 
     const getstyle = window.getComputedStyle(document.getElementById(svg_id))
@@ -54,7 +55,17 @@ function createDensityPlot( svg_id,
         .on("click", (event, attr) => {
             const [x, y] = d3.pointer(event);
             const xVal = xScale.invert( x );
+            g.selectAll("#preference").remove();
+            g.append("rect")
+                .attr("id", "preference")
+                .attr("x", x)
+                .attr("y", 0)
+                .attr("width", 3)
+                .attr("height", height)
+                .attr("fill", "red")
+            preferences[attr] = xVal;
             console.log(xVal);
+            on_preference_set(filteredData);
         })
     
     

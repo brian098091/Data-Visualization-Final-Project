@@ -128,61 +128,61 @@ function createScatterPlot( svg_name,
         });
 
 
-        const brush = d3.brush()
-        .extent([[0, 0], [TOTAL_WIDTH - margin.left - margin.right, TOTAL_HEIGHT - margin.top - margin.bottom]])
+    const brush = d3.brush()
+        .extent([[0, 0], [width, height]])
         .on("end", brushed);
 
     g.append("g")
        .attr("class", "brush")
        .call(brush);
         
-            // Modify the brushed function
-            function brushed(event) {
-                if (!event.selection) {
-                    g.selectAll(".circle")
-                       .style("opacity", 1); // Reset opacity for all circles
-                    if (currentGenreFilter) {
-                        onBrushed(data.filter(d => d[color_attr_name] === currentGenreFilter));
-                    } else {
-                        onBrushed(data);
-                    }
-                } else {
-                    const [[x0, y0], [x1, y1]] = event.selection;
-                    g.selectAll(".circle")
-                       .style("opacity", d => {
-                           const x = xScale(d[x_attr_name]);
-                           const y = yScale(d[y_attr_name]);
-                           return x >= x0 && x <= x1 && y >= y0 && y <= y1 ? 1 : 0.2; // Decreased opacity for circles outside the brush
-                       });
-                    let filteredData = data.filter(d => {
-                        const x = xScale(d[x_attr_name]);
-                        const y = yScale(d[y_attr_name]);
-                        const isWithinBrush = x >= x0 && x <= x1 && y >= y0 && y <= y1;
-                        return currentGenreFilter ? (d[color_attr_name] === currentGenreFilter && isWithinBrush) : isWithinBrush;
-                    });
-                    if (onBrushed) onBrushed(filteredData);
-                }
+    // Modify the brushed function
+    function brushed(event) {
+        if (!event.selection) {
+            g.selectAll("#mark")
+                .style("opacity", 1); // Reset opacity for all circles
+            if (currentGenreFilter) {
+                onBrushed(data.filter(d => d[color_attr_name] === currentGenreFilter));
+            } else {
+                onBrushed(data);
             }
+        } else {
+            const [[x0, y0], [x1, y1]] = event.selection;
+            g.selectAll("#mark")
+                .style("opacity", d => {
+                    const x = xScale(d[x_attr_name]);
+                    const y = yScale(d[y_attr_name]);
+                    return x >= x0 && x <= x1 && y >= y0 && y <= y1 ? 1 : 0.2; // Decreased opacity for circles outside the brush
+                });
+            let filteredData = data.filter(d => {
+                const x = xScale(d[x_attr_name]);
+                const y = yScale(d[y_attr_name]);
+                const isWithinBrush = x >= x0 && x <= x1 && y >= y0 && y <= y1;
+                return currentGenreFilter ? (d[color_attr_name] === currentGenreFilter && isWithinBrush) : isWithinBrush;
+            });
+            if (onBrushed) onBrushed(filteredData);
+        }
+    }
             
 
-            function updateScatterPlot(filteredData) {
-                g.selectAll("circle").remove();
-        
-                // Add new circles for the filtered data
-                g.selectAll(".circle")
-                    .data(filteredData)
-                    .enter().append("circle")
-                    .attr("class", "circle")
-                    .attr("cx", d => xScale(d[x_attr_name]))
-                    .attr("cy", d => yScale(d[y_attr_name]))
-                    .attr("r", mark_size/2)
-                    .style("fill", d => colorScale(d[color_attr_name]));
+    function updateScatterPlot(filteredData) {
+        g.selectAll("circle").remove();
 
-                g.select(".brush").call(brush.move, null);
-        
-                // Reapply the brush to the new circles
-                g.select(".brush").call(brush);
-            }
+        // Add new circles for the filtered data
+        g.selectAll("#mark")
+            .data(filteredData)
+            .enter().append("circle")
+            .attr("id", "mark")
+            .attr("cx", d => xScale(d[x_attr_name]))
+            .attr("cy", d => yScale(d[y_attr_name]))
+            .attr("r", mark_size/2)
+            .style("fill", d => colorScale(d[color_attr_name]));
+
+        g.select(".brush").call(brush.move, null);
+
+        // Reapply the brush to the new circles
+        g.select(".brush").call(brush);
+    }
 
     color_label_g.selectAll("legend")
         .data(color_attr_cats)
