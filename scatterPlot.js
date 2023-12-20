@@ -20,7 +20,7 @@ function updateScatterPlot(artistData) {
                   .append("g")
                   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    var tip = d3.tip().attr('class', 'd3-tip').html((EVENT,d)=> (`Name: ${d.track_name}<br>Publish Date: ${d.track_album_release_date}<br>Popularity: ${d.track_popularity}<br>Recommend grade: ${d.combinedPopularity}`) );
+    var tip = d3.tip().attr('class', 'd3-tip').html((EVENT,d)=> (`Song: ${d.track_name}<br>Album: ${d.track_album_name}<br>Publish Date: ${d.track_album_release_date}<br>Popularity: ${d.track_popularity}<br>Recommend grade: ${d.combinedPopularity}`) );
 
     const circlesGroup = svg.append("g").attr("class", "circlesGroup");
     const xAxisGroup = svg.append("g").attr("class", "xAxisGroup");

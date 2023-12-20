@@ -25,7 +25,7 @@ function createBarChart(data) {
 
 
                   /* Initialize tooltip */
-                  var tip = d3.tip().attr('class', 'd3-tip').html((EVENT,d)=> d );
+                  var tip = d3.tip().attr('class', 'd3-tip').html((EVENT,d)=> (`Artist: ${d[0]}<br>Num of songs reco:${d[1]}`));
 
                   
                   
