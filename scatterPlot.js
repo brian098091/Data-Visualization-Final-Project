@@ -33,29 +33,24 @@ function updateScatterPlot(artistData) {
     // Set up the scales
     const x = d3.scaleTime()
                 .range([0, width])
-                .domain(d3.extent(artistData, d => d.track_release_date));
+                .domain(d3.extent(fullArtistData, d => d.track_release_date))
 
     const y = d3.scaleLinear()
                 .range([height, 0])
-                .domain([0, d3.max(artistData, d => d.track_popularity)]);
+                .domain([0, d3.max(fullArtistData, d => d.track_popularity)]);
     
 
-    // Select and update the x-axis
-    svg.select(".x-axis")
-       .transition()
-       .duration(1000)
-       .call(d3.axisBottom(x));
-
-    // Select and update the y-axis
-    svg.select(".y-axis")
-       .transition()
-       .duration(1000)
-       .call(d3.axisLeft(y));
+  
+       
 
        xAxisGroup.attr("transform", `translate(0, ${height})`)
-          .call(d3.axisBottom(x));
+          .call(d3.axisBottom(x))
+          .selectAll("text")
+        .attr("class", "axis-text");
 
-    yAxisGroup.call(d3.axisLeft(y));
+    yAxisGroup.call(d3.axisLeft(y))
+    .selectAll("text")
+        .attr("class", "axis-text");
 
     const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
                          .domain([...new Set(fullArtistData.map(d => d.playlist_genre))]);
@@ -117,17 +112,24 @@ genres.forEach((genre, index) => {
                             .on("click", function() {
                                 const selectedGenre = d3.select(this).attr("data-genre");
                                 filterScatterPlot(selectedGenre);
+                                d3.selectAll(".legend-item").each(function() {
+                                    const item = d3.select(this);
+                                    const isCurrent = item.attr("data-genre") === filterScatterPlot.currentFilter;
+                                    item.select("circle")
+                                        .style("stroke", isCurrent ? "black" : "none")
+                                        .style("stroke-width", isCurrent ? 2 : 0);
+                                    });
                             });
-    legendRow.append("rect")
-             .attr("x", 30)
-             .attr("y", 400)
-             .attr("width", 30)
-             .attr("height", 30)
+
+    legendRow.append("circle")
+             .attr("cx", 30)
+             .attr("cy", 400)
+             .attr("r",15)
              .attr("fill", colorScale(genre));
 
     legendRow.append("text")
-             .attr("x", 140)
-             .attr("y",425)
+             .attr("x", 120)
+             .attr("y",410)
              .attr("text-anchor", "end")
              .style("text-transform", "capitalize")
              .style("font-size", "30px") 
@@ -150,6 +152,7 @@ function filterScatterPlot(selectedGenre) {
         const filteredData = fullArtistData.filter(d => d.playlist_genre === selectedGenre);
         updateScatterPlot(filteredData);
     }
+
 }
     // Make sure to expose the functions globally if this script is included in a <script> tag
     window.updateScatterPlot = updateScatterPlot;

@@ -3,7 +3,8 @@ function createScatterPlot( svg_name,
                             x_attr_name, y_attr_name, color_attr_name,
                             x_axis_label, y_axis_label, color_attr_label,
                             margin = {left:100, right:50, top:50, bottom:100 },
-                            mark_size = 1) {
+                            mark_size = 2,
+                            onBrushed,onLegendClick) {
 
     const getstyle = window.getComputedStyle(document.getElementById(svg_name))
     const width_string = getstyle.width
@@ -51,7 +52,7 @@ function createScatterPlot( svg_name,
     plot_enter.append("circle")
         .attr("cx", d => xScale(d[x_attr_name]))
         .attr("cy", d => yScale(d[y_attr_name]))
-        .attr("r", mark_size/2)
+        .attr("r", mark_size)
         .attr("id", "mark")
         .style("fill", d => colorScale(d[color_attr_name]))
     plot_exit.remove();
@@ -83,13 +84,8 @@ function createScatterPlot( svg_name,
         .attr("y", -margin.left/2)
     
     // Brush
-    const brush = d3.brush()
-        .extent([[0, 0], [width, height]])
-        .on("end", event => {
-            const selected = event.selection
-            console.log(selected);
-        })
-    g.call(brush);
+    
+
 
     // Color Labels
     const colorLabelScale = d3.scalePoint()
@@ -104,31 +100,92 @@ function createScatterPlot( svg_name,
     let color_label_cx = margin.right/4
     let color_label_r = 10
 
-    color_label_g.selectAll("dot")
-        .data(color_attr_cats)
-        .enter()
-            .append("circle")
-            .attr("cx", color_label_cx)
-            .attr("cy", d => colorLabelScale(d))
-            .attr("r",color_label_r)
-            .style("fill", d => colorScale(d))
-            .attr("test", d=>d)
-            .on("mouseover", function() {
-                d3.select(this).attr("stroke", "black")
-                const genre = d3.select(this).attr("test");
-                const res = d3.select("svg g").selectAll("circle")
-                res.data(data)
-                    .attr("opacity", d => d[color_attr_name] === genre ? 1:0.25)
-                    .attr("r", d => d[color_attr_name] === genre ? 1:0.5)
-            })
-            .on("mouseleave", function() {
-                d3.select(this).attr("stroke", "none")
-                const genre = d3.select(this).attr("test");
-                const res = d3.select("svg g").selectAll("circle")
-                res.data(data)
-                    .attr("opacity", 1)
-                    .attr("r", 0.5)
-            })
+    let currentGenreFilter = null;
+
+    color_label_g.selectAll("legend-dot")
+    .data(color_attr_cats)
+    .enter()
+        .append("circle")
+        .attr("class", "legend-dot")  // Assigning a class
+        .attr("cx", color_label_cx)
+        .attr("cy", d => colorLabelScale(d))
+        .attr("r", color_label_r)
+        .style("fill", d => colorScale(d))
+        .on('click', function(event, genre) {
+            if (currentGenreFilter === genre) {
+                // Reset to original data
+                currentGenreFilter = null;
+                d3.selectAll(".legend-dot").style('stroke', 'none'); // Use the class selector
+                updateScatterPlot(data);
+                if (onLegendClick) onLegendClick(data);
+            } else {
+                // Apply new genre filter
+                currentGenreFilter = genre;
+                d3.selectAll('.legend-dot')
+                    .style('stroke', d => d === genre ? 'black' : 'none')
+                    .style('stroke-width', d => d === genre ? 3 : 0); // Use the class selector
+                const filteredData = data.filter(d => d[color_attr_name] === genre);
+                updateScatterPlot(filteredData);
+                if (onLegendClick) onLegendClick(filteredData);
+            }
+        });
+
+
+        const brush = d3.brush()
+        .extent([[0, 0], [TOTAL_WIDTH - margin.left - margin.right, TOTAL_HEIGHT - margin.top - margin.bottom]])
+        .on("end", brushed);
+
+    g.append("g")
+       .attr("class", "brush")
+       .call(brush);
+        
+            // Modify the brushed function
+            function brushed(event) {
+                if (!event.selection) {
+                    g.selectAll(".circle")
+                       .style("opacity", 1); // Reset opacity for all circles
+                    if (currentGenreFilter) {
+                        onBrushed(data.filter(d => d[color_attr_name] === currentGenreFilter));
+                    } else {
+                        onBrushed(data);
+                    }
+                } else {
+                    const [[x0, y0], [x1, y1]] = event.selection;
+                    g.selectAll(".circle")
+                       .style("opacity", d => {
+                           const x = xScale(d[x_attr_name]);
+                           const y = yScale(d[y_attr_name]);
+                           return x >= x0 && x <= x1 && y >= y0 && y <= y1 ? 1 : 0.2; // Decreased opacity for circles outside the brush
+                       });
+                    let filteredData = data.filter(d => {
+                        const x = xScale(d[x_attr_name]);
+                        const y = yScale(d[y_attr_name]);
+                        const isWithinBrush = x >= x0 && x <= x1 && y >= y0 && y <= y1;
+                        return currentGenreFilter ? (d[color_attr_name] === currentGenreFilter && isWithinBrush) : isWithinBrush;
+                    });
+                    if (onBrushed) onBrushed(filteredData);
+                }
+            }
+            
+
+            function updateScatterPlot(filteredData) {
+                g.selectAll("circle").remove();
+        
+                // Add new circles for the filtered data
+                g.selectAll(".circle")
+                    .data(filteredData)
+                    .enter().append("circle")
+                    .attr("class", "circle")
+                    .attr("cx", d => xScale(d[x_attr_name]))
+                    .attr("cy", d => yScale(d[y_attr_name]))
+                    .attr("r", mark_size)
+                    .style("fill", d => colorScale(d[color_attr_name]));
+
+                g.select(".brush").call(brush.move, null);
+        
+                // Reapply the brush to the new circles
+                g.select(".brush").call(brush);
+            }
 
     color_label_g.selectAll("legend")
         .data(color_attr_cats)

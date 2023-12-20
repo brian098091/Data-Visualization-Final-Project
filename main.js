@@ -12,12 +12,12 @@ d3.csv('cleaned.csv').then(data => {
                         "danceability", "energy", "playlist_genre",
                         "danceability", "energy", "playlist_genre",
                         margin = { left:90, right:90, top:60, bottom:90},
-                        1
-                        )
+                        2,
+                        updateBarChart,updateBarChart);
     const density_attr_names = ["loudness", "liveness", "acousticness", "valence", "tempo", "duration_ms"];
     const windowG = d3.select("body")
-        .append("g")
-        .attr("id", "densityG")
+                    .append("g")
+                    .attr("id", "densityG")
     
     windowG.selectAll("svg")
         .data(density_attr_names)
@@ -44,3 +44,11 @@ d3.csv('cleaned.csv').then(data => {
         updateScatterPlot(artistData);
     };
 });
+
+function updateBarChart(brushedData) {
+    // Clear the existing bar chart
+    d3.select('#barChart').selectAll('*').remove();
+
+    // Draw the bar chart with the brushed data
+    createBarChart(brushedData);
+}
