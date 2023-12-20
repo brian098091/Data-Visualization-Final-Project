@@ -3,9 +3,9 @@
 let currentFilter = null;
 function updateScatterPlot(artistData) {
     // Constants for the SVG size and margins
-    const margin = { top: 160, right: 160, bottom: 40, left: 40 },
-          width = 1200 - margin.left - margin.right,
-          height = 900 - margin.top - margin.bottom;
+    const margin = { top: 60, right: 100, bottom: 40, left: 40 },
+          width = 650 - margin.left - margin.right,
+          height = 450 - margin.top - margin.bottom;
 
           artistData.forEach(d => {
             d.track_popularity = +d.track_popularity;
@@ -56,7 +56,7 @@ function updateScatterPlot(artistData) {
                          .domain([...new Set(fullArtistData.map(d => d.playlist_genre))]);
 
     const sizeScale = d3.scaleLinear()
-                        .range([5, 20])
+                        .range([3, 10])
                         .domain(d3.extent(artistData, d => d.combinedPopularity));
 
     // Bind the filtered data to the circles and update the scatter plot
@@ -95,7 +95,7 @@ svg.selectAll('circle')
    .attr("x", width / 2)             
    .attr("y", 0 - (margin.top / 2))
    .attr("text-anchor", "middle")  
-   .style("font-size", "32px")
+   .style("font-size", "26px")
    .text(`Music of ${artistData[0].track_artist}`)
 
    const genres = [...new Set(fullArtistData.map(d => d.playlist_genre))]; // Array of genres
@@ -105,7 +105,7 @@ legend = svg.append("g")
             .attr("transform", `translate(${width}, 20)`)
 genres.forEach((genre, index) => {
     const legendRow = legend.append("g")
-                            .attr("transform", `translate(0, ${index * 50})`)
+                            .attr("transform", `translate(0, ${index * 25})`)
                             .attr("class", "legend-item")
                             .attr("data-genre", genre)
                             .style("cursor", "pointer")
@@ -123,16 +123,16 @@ genres.forEach((genre, index) => {
 
     legendRow.append("circle")
              .attr("cx", 30)
-             .attr("cy", 400)
-             .attr("r",15)
+             .attr("cy", 195)
+             .attr("r",5)
              .attr("fill", colorScale(genre));
 
     legendRow.append("text")
-             .attr("x", 120)
-             .attr("y",410)
-             .attr("text-anchor", "end")
+             .attr("x", 50)
+             .attr("y",200)
+             .attr("text-anchor", "front")
              .style("text-transform", "capitalize")
-             .style("font-size", "30px") 
+             .style("font-size", "14px") 
              .text(genre);
             });
 

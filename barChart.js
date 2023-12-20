@@ -3,9 +3,9 @@
 // import * as d3 from 'd3';
 
 function createBarChart(data) {
-    const margin = { top: 100, right: 20, bottom: 50, left: 200 },
-          width = 1200 - margin.left - margin.right,
-          height = 800 - margin.top - margin.bottom;
+    const margin = { top: 100, right: 20, bottom: 50, left: 150 },
+          width = 800 - margin.left - margin.right,
+          height = 400 - margin.top - margin.bottom;
 
     // Aggregate data for top five artists
     let artistCounts = d3.rollups(data, v => v.length, d => d.track_artist)

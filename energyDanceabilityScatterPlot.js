@@ -83,10 +83,6 @@ function createScatterPlot( svg_name,
         .attr("x", -height/2)
         .attr("y", -margin.left/2)
     
-    // Brush
-    
-
-
     // Color Labels
     const colorLabelScale = d3.scalePoint()
         .domain( data.map(d=>d[color_attr_name]) )
@@ -111,6 +107,7 @@ function createScatterPlot( svg_name,
         .attr("cy", d => colorLabelScale(d))
         .attr("r", color_label_r)
         .style("fill", d => colorScale(d))
+        .style("cursor", "pointer")
         .on('click', function(event, genre) {
             if (currentGenreFilter === genre) {
                 // Reset to original data
