@@ -1,11 +1,14 @@
-function createDensityPlot( svg_name, 
+function createDensityPlot( svg_id, 
     data,
     attr_name,
     margin = {left:100, right:50, top:50, bottom:100 }
     ) {
 
-    const TOTAL_HEIGHT = document.getElementById(svg_name).getAttribute("height");
-    const TOTAL_WIDTH = document.getElementById(svg_name).getAttribute("width");
+    const getstyle = window.getComputedStyle(document.getElementById(svg_id))
+    const width_string = getstyle.width
+    const height_string = getstyle.height
+    const TOTAL_WIDTH = parseInt(width_string);
+    const TOTAL_HEIGHT = parseInt(height_string);
     const height = TOTAL_HEIGHT - margin.top - margin.bottom;
     const width = TOTAL_WIDTH - margin.left - margin.right;
 
@@ -21,7 +24,7 @@ function createDensityPlot( svg_name,
         .domain(d3.extent(density.map(d=>d[1])))
         .range([height, 0])
 
-    const all = d3.select("#" + svg_name)
+    const all = d3.select("#" + svg_id)
 
     const g = all.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`)

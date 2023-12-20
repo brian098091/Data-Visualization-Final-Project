@@ -5,8 +5,11 @@ function createScatterPlot( svg_name,
                             margin = {left:100, right:50, top:50, bottom:100 },
                             mark_size = 1) {
 
-    const TOTAL_HEIGHT = document.getElementById(svg_name).getAttribute("height");
-    const TOTAL_WIDTH = document.getElementById(svg_name).getAttribute("width");
+    const getstyle = window.getComputedStyle(document.getElementById(svg_name))
+    const width_string = getstyle.width
+    const height_string = getstyle.height
+    const TOTAL_WIDTH = parseInt(width_string);
+    const TOTAL_HEIGHT = parseInt(height_string);
     const height = TOTAL_HEIGHT - margin.top - margin.bottom;
     const width = TOTAL_WIDTH - margin.left - margin.right;
 
